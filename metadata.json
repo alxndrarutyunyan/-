@@ -1,0 +1,6 @@
+{
+  "name": "Телеграм Бот - Обучение с Александром",
+  "description": "Официальный Телеграм-бот и онлайн-панель для записи на занятия по английскому и французскому языкам, расчета абонементов и работы с учениками.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
