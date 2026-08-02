@@ -1,5 +1,7 @@
 import express from "express";
 import path from "path";
+import fs from "fs";
+import JSZip from "jszip";
 import { createServer as createViteServer } from "vite";
 import { Bot } from "grammy";
 import { handleBotCommand } from "./server/botLogic";
@@ -197,11 +199,17 @@ async function setupTelegramBot(token: string) {
 
     // Start bot in background long polling mode
     bot.start({
+      drop_pending_updates: true,
       onStart: (info) => {
         console.log(`Telegram Bot @${info.username} successfully started polling!`);
       },
-    }).catch((err) => {
-      console.error("Telegram bot runtime polling error:", err);
+    }).catch((err: any) => {
+      const msg = err?.message || String(err);
+      if (msg.includes("409") || msg.includes("Conflict")) {
+        console.warn("Telegram bot polling conflict (409) - another instance is active or previous session closing.");
+      } else {
+        console.error("Telegram bot runtime polling error:", err);
+      }
     });
 
     activeBot = bot;
@@ -293,6 +301,37 @@ app.patch("/api/bookings/:id", (req, res) => {
     res.json({ status: "ok", booking });
   } else {
     res.status(404).json({ error: "Booking not found" });
+  }
+});
+
+// ZIP Export Endpoint
+function addDirectoryToZip(zip: JSZip, dirPath: string, zipPath: string) {
+  const items = fs.readdirSync(dirPath);
+  for (const item of items) {
+    if (["node_modules", ".git", "dist", ".cache"].includes(item)) continue;
+    const fullPath = path.join(dirPath, item);
+    const relZipPath = zipPath ? `${zipPath}/${item}` : item;
+    const stat = fs.statSync(fullPath);
+    if (stat.isDirectory()) {
+      addDirectoryToZip(zip, fullPath, relZipPath);
+    } else {
+      const content = fs.readFileSync(fullPath);
+      zip.file(relZipPath, content);
+    }
+  }
+}
+
+app.get("/api/export-zip", async (req, res) => {
+  try {
+    const zip = new JSZip();
+    addDirectoryToZip(zip, process.cwd(), "");
+    const content = await zip.generateAsync({ type: "nodebuffer" });
+    res.setHeader("Content-Type", "application/zip");
+    res.setHeader("Content-Disposition", 'attachment; filename="telegram-bot-project.zip"');
+    res.send(content);
+  } catch (err: any) {
+    console.error("Export zip error:", err);
+    res.status(500).json({ error: "Failed to create ZIP archive" });
   }
 });
 

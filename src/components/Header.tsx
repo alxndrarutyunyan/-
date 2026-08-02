@@ -1,5 +1,5 @@
 import React from "react";
-import { MessageSquare, Calculator, BookOpen, Users, Bot, CheckCircle2, AlertCircle, Key, ExternalLink } from "lucide-react";
+import { MessageSquare, Calculator, BookOpen, Users, Bot, CheckCircle2, AlertCircle, Key, ExternalLink, Download } from "lucide-react";
 import { BotStatusInfo } from "../types";
 
 interface HeaderProps {
@@ -69,6 +69,16 @@ export const Header: React.FC<HeaderProps> = ({
                 </>
               )}
             </button>
+
+            <a
+              href="/api/export-zip"
+              download="telegram-bot-project.zip"
+              title="Скачать весь исходный код проекта в ZIP архиве"
+              className="flex items-center gap-1.5 text-xs font-medium bg-emerald-600 hover:bg-emerald-500 text-white px-3 py-1.5 rounded-lg transition-colors border border-emerald-400/30 shadow-sm"
+            >
+              <Download className="w-3.5 h-3.5" />
+              <span className="hidden sm:inline">Скачать ZIP</span>
+            </a>
 
             <a
               href="https://t.me/alxndr_artnn"

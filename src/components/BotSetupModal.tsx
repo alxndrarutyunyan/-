@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { X, Key, Check, AlertCircle, Bot, ExternalLink, Sparkles } from "lucide-react";
+import { X, Key, Check, AlertCircle, Bot, ExternalLink, Sparkles, Download } from "lucide-react";
 import { BotStatusInfo } from "../types";
 
 interface BotSetupModalProps {
@@ -179,6 +179,22 @@ export const BotSetupModal: React.FC<BotSetupModalProps> = ({
             </button>
           </div>
         </form>
+
+        {/* Download Project Source Code ZIP */}
+        <div className="mt-6 pt-6 border-t border-slate-800 flex items-center justify-between gap-3">
+          <div>
+            <p className="text-xs font-semibold text-slate-200">Исходный код проекта</p>
+            <p className="text-[11px] text-slate-400">Скачайте полные исходники для переноса на свой VPS или ПК</p>
+          </div>
+          <a
+            href="/api/export-zip"
+            download="telegram-bot-project.zip"
+            className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-semibold bg-emerald-600 hover:bg-emerald-500 text-white transition-colors shrink-0 shadow-md shadow-emerald-600/20"
+          >
+            <Download className="w-4 h-4" />
+            <span>Скачать .ZIP</span>
+          </a>
+        </div>
 
       </div>
     </div>
